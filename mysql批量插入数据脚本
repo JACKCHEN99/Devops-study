@@ -4,52 +4,14 @@ read -p "每秒插入多少条: " num2
 time=$(echo "print ${num1}.0/${num2}" | python)
 sleep_time=$(echo "print 1.0/${num2}" | python)
 echo "睡眠时间 $sleep_time"
-echo "大约需要: $time s "
-
-start_time=`date --date='0 days ago' "+%Y-%m-%d %H:%M:%S"`
-create_table() {
-	mysql -uroot -h 172.16.1.51 -e " \
-	use test; \
-	create table employee(  \
-	id int unsigned primary key auto_increment,  \
-	name varchar(20) not null,  \
-	gender enum('w','m'),  \
-	age tinyint unsigned not null,  \
-	birthday datetime,  \
-	salary int unsigned not null  \
-	);"
-}
-
-mysql -uroot -h 172.16.1.51 -e "use test" &>/dev/null
-if [ $? -eq 1 ];then
-	mysql -uroot -h 172.16.1.51 -e "create database test" &>/dev/null
-	create_table
-else
-	mysql -uroot -h 172.16.1.51 -e "use test;desc employee" &>/dev/null
-	if [ $? -eq 1 ];then
-		create_table
-	fi
-fi
-
-i=1
+echo "大约需要: $time s " start_time=`date --date='0 天之前' "+%Y-%m-%d %H:%M:%S"`
+create_table() { mysql -uroot -h 172.16.1.51 -e " \ use test; \ create table employee( \ id int unsigned primary key auto_increment, \ name varchar(20) not null, \ gender enum('w','m'), \ age tinyint unsigned not null, \ birthday datetime, \ salary int unsigned not null \ );"
+} mysql -uroot -h 172.16.1.51 -e "use test" &>/dev/null
+if [ $? -eq 1 ];then mysql -uroot -h 172.16.1.51 -e "create database test" &>/dev/null create_table
+else mysql -uroot -h 172.16.1.51 -e "use test;desc employee" &>/dev/null if [ $? -eq 1 ];then create_table fi
+fi i=1
 while [ $i -le $num1 ]
-do
-	name=$(mkpasswd -l 8 -c 8 -C 0 -s 0 -d 0)
-	sj=$(echo $[$RANDOM%2])
-	if [ $sj -eq 0 ];then
-		gender='m'
-	else
-		gender='w'
-	fi
-	age=$(echo $[$RANDOM % 101 + 1])
-	birthday=$(date +"%Y%m%d" -d "-$(shuf -i 1000-15000 -n 1) days")
-	salary=$(echo $RANDOM)
-
-	mysql -uroot -h 172.16.1.51 -e "insert into test.employee(name,gender,age,birthday,salary) values ('${name}','${gender}',${age},${birthday},${salary})"
-	let i++
-	sleep $sleep_time
-done
-
-finish_time=`date --date='0 days ago' "+%Y-%m-%d %H:%M:%S"`
+do name=$(mkpasswd -l 8 -c 8 -C 0 -s 0 -d 0) sj=$(echo $[$RANDOM%2]) if [ $sj -eq 0 ];then gender='m' else gender='w' fi age=$(echo $[$RANDOM % 101 + 1]) birthday=$(date +"%Y%m%d" -d "-$(shuf -i 1000-15000 -n 1) days") salary=$(echo $RANDOM) mysql -uroot -h 172.16.1.51 -e "insert into test.employee(name,gender,age,birthday,salary) values ('${name}','${gender}',${age},${birthday},${salary})" let i++ sleep $sleep_time
+done finish_time=`date --date='0 天之前' "+%Y-%m-%d %H:%M:%S"`
 duration=$(($(($(date +%s -d "$finish_time")-$(date +%s -d "$start_time")))))
 echo "实际用时: $duration"
