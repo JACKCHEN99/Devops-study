@@ -1,4 +1,4 @@
-# what: Add color to the linux man help for easy identification.
+# func: Add color to the linux man help for easy identification.
 # how:  Copy the following into ~/.bashrc, then Re-login bash
 
 export LESS_TERMCAP_mb=$'\E[01;31m'
