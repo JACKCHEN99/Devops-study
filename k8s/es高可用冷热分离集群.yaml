@@ -1,13 +1,13 @@
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: elastic
+  name: default
 ---
 kind: Service
 apiVersion: v1
 metadata:
   name: es-cluster-nodeport
-  namespace: elastic
+  namespace: default
 spec:
   type: NodePort
   selector:
@@ -15,13 +15,13 @@ spec:
   ports:
     - port: 9200
       targetPort: 9200
-      nodePort: 32701
+      nodePort: 32710
 ---
 kind: Service
 apiVersion: v1
 metadata:
   name: es-svc
-  namespace: elastic
+  namespace: default
   labels:
     app: es-cluster
   annotations:
@@ -37,7 +37,7 @@ spec:
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  namespace: elastic
+  namespace: default
   name: es-cluster-master
   labels:
     app: es-cluster-master
@@ -55,7 +55,7 @@ spec:
         role: master
     spec:
       containers:
-        - name: elasticsearch-master
+        - name: defaultsearch-master
           image: registry.cn-hangzhou.aliyuncs.com/k8sos/es:v1
           ports:
             - containerPort: 9200
@@ -71,11 +71,8 @@ spec:
                   - "sysctl -w vm.max_map_count=262144; ulimit -l unlimited;"
           securityContext:
             privileged: true
-          readinessProbe:
-            httpGet:
-              port: 9200
           volumeMounts:
-            - mountPath: /usr/share/elasticsearch/data
+            - mountPath: /usr/share/defaultsearch/data
               name: es-data
           env:
             - name: "cluster.name"
@@ -105,7 +102,7 @@ spec:
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  namespace: elastic
+  namespace: default
   name: es-head
 spec:
   selector:
@@ -127,7 +124,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: es-head-svc
-  namespace: elastic
+  namespace: default
 spec:
   type: NodePort
   selector:
@@ -136,189 +133,3 @@ spec:
     - port: 9100
       targetPort: 9100
       nodePort: 32701
----
-kind: Deployment
-apiVersion: apps/v1
-metadata:
-  name: es-cluster-data-hot
-  namespace: elastic
-  labels:
-    app: es-cluster-data-hot
-    role: data
-spec:
-  selector:
-    matchLabels:
-      app: es-cluster
-      role: data
-      datatype: hot
-  template:
-    metadata:
-      labels:
-        app: es-cluster
-        role: data
-        datatype: hot
-    spec:
-      containers:
-        - name: es-cluster-hot
-          image: registry.cn-hangzhou.aliyuncs.com/k8sos/es:v1
-          ports:
-            - containerPort: 9200
-              protocol: TCP
-            - containerPort: 9300
-              protocol: TCP
-          env:
-            - name: "cluster.name"
-              value: "es-cluster"
-            - name: "bootstrap.memory_lock"
-              value: "true"
-            - name: "discovery.zen.ping.unicast.hosts"
-              value: "es-svc"
-            - name: "node.master"
-              value: "false"
-            - name: "node.data"
-              value: "true"
-            - name: "ES_JAVA_OPTS"
-              value: "-Xms256m -Xmx256m"
-            - name: "node.attr.box_type"
-              value: "hot"
-          lifecycle:
-            postStart:
-              exec:
-                command:
-                  - "/bin/sh"
-                  - "-c"
-                  - "sysctl -w vm.max_map_count=262144; ulimit -l unlimited;"
-          securityContext:
-            privileged: true
-          volumeMounts:
-            - mountPath: /usr/share/elasticsearch/data
-              name: es-data
-      volumes:
-        - name: es-data
-          emptyDir: {}
----
-kind: Deployment
-apiVersion: apps/v1
-metadata:
-  name: es-cluster-data-warm
-  namespace: elastic
-  labels:
-    app: es-cluster-data-warm
-    role: data
-spec:
-  selector:
-    matchLabels:
-      app: es-cluster
-      role: data
-      datatype: warm
-  template:
-    metadata:
-      labels:
-        app: es-cluster
-        role: data
-        datatype: warm
-    spec:
-      containers:
-        - name: es-cluster-warm
-          image: registry.cn-hangzhou.aliyuncs.com/k8sos/es:v1
-          ports:
-            - containerPort: 9200
-              protocol: TCP
-            - containerPort: 9300
-              protocol: TCP
-          env:
-            - name: "cluster.name"
-              value: "es-cluster"
-            - name: "bootstrap.memory_lock"
-              value: "true"
-            - name: "discovery.zen.ping.unicast.hosts"
-              value: "es-svc"
-            - name: "node.master"
-              value: "false"
-            - name: "node.data"
-              value: "true"
-            - name: "ES_JAVA_OPTS"
-              value: "-Xms256m -Xmx256m"
-            - name: "node.attr.box_type"
-              value: "warm"
-          lifecycle:
-            postStart:
-              exec:
-                command:
-                  - "/bin/sh"
-                  - "-c"
-                  - "sysctl -w vm.max_map_count=262144; ulimit -l unlimited;"
-          securityContext:
-            privileged: true
-          readinessProbe:
-            httpGet:
-              port: 9200
-          volumeMounts:
-            - mountPath: /usr/share/elasticsearch/data
-              name: es-data
-      volumes:
-        - name: es-data
-          emptyDir: {}
----
-kind: Deployment
-apiVersion: apps/v1
-metadata:
-  name: es-cluster-data-cold
-  namespace: elastic
-  labels:
-    app: es-cluster-data-cold
-    role: data
-spec:
-  selector:
-    matchLabels:
-      app: es-cluster
-      role: data
-      datatype: cold
-  template:
-    metadata:
-      labels:
-        app: es-cluster
-        role: data
-        datatype: cold
-    spec:
-      containers:
-        - name: es-cluster-cold
-          image: registry.cn-hangzhou.aliyuncs.com/k8sos/es:v1
-          ports:
-            - containerPort: 9200
-              protocol: TCP
-            - containerPort: 9300
-              protocol: TCP
-          env:
-            - name: "cluster.name"
-              value: "es-cluster"
-            - name: "bootstrap.memory_lock"
-              value: "true"
-            - name: "discovery.zen.ping.unicast.hosts"
-              value: "es-svc"
-            - name: "node.master"
-              value: "false"
-            - name: "node.data"
-              value: "true"
-            - name: "ES_JAVA_OPTS"
-              value: "-Xms256m -Xmx256m"
-            - name: "node.attr.box_type"
-              value: "cold"
-          lifecycle:
-            postStart:
-              exec:
-                command:
-                  - "/bin/sh"
-                  - "-c"
-                  - "sysctl -w vm.max_map_count=262144; ulimit -l unlimited;"
-          securityContext:
-            privileged: true
-          readinessProbe:
-            httpGet:
-              port: 9200
-          volumeMounts:
-            - mountPath: /usr/share/elasticsearch/data
-              name: es-data
-      volumes:
-        - name: es-data
-          emptyDir: {}
