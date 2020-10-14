@@ -1,0 +1,101 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: redis-svc
+  labels:
+    app: redis
+  annotations:
+    redis.baidu.com/redis: cluster
+    redis.baidu.com/network: headless-svc
+spec:
+  selector:
+    app: redis
+  ports:
+    - port: 6379
+      protocol: TCP
+      targetPort: 6379
+  clusterIP: None
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: redis
+  labels:
+    app: redis
+  annotations:
+    redis.baidu.com/redis: cluster
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: redis
+  serviceName: redis-svc
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:6.0.8
+          command:
+            - "/bin/sh"
+            - "-c"
+            - "redis-server /opt/redis/redis.conf"
+          ports:
+            - containerPort: 6379
+              name: tcp
+          volumeMounts:
+            - mountPath: /opt/redis/
+              name: redis-configmap
+
+      volumes:
+        - name: redis-configmap
+          configMap:
+            name: redis
+            items:
+              - key: redis.conf
+                path: redis.conf
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: redis
+data:
+  redis.conf: |
+    bind 0.0.0.0
+    protected-mode yes
+    port 6379
+    tcp-backlog 511
+    timeout 0
+    tcp-keepalive 300
+    daemonize no
+    supervised no
+    pidfile /var/run/redis_6379.pid
+    loglevel notice
+    logfile ""
+    databases 16
+    always-show-logo yes
+    save 900 1
+    save 300 10
+    save 60 10000
+    stop-writes-on-bgsave-error yes
+    rdbcompression yes
+    rdbchecksum yes
+    dbfilename dump.rdb
+    rdb-del-sync-files no
+    dir /tmp
+    replica-serve-stale-data yes
+    replica-read-only yes
+    repl-diskless-sync no
+    repl-diskless-sync-delay 5
+    repl-diskless-load disabled
+    repl-disable-tcp-nodelay no
+    replica-priority 100
+    acllog-max-len 128
+    lazyfree-lazy-eviction no
+    lazyfree-lazy-expire no
+    lazyfree-lazy-server-del no
+    replica-lazy-flush no
+    lazyfree-lazy-user-del no
