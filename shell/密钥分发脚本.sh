@@ -26,3 +26,14 @@ expect << EOF
     expect eof 
 EOF
 done
+
+# 模拟第一次登陆
+for i in $ip;do
+expect << EOF
+    spawn ssh $hostname@$i exit
+    expect {
+        "yes/no" {send "yes\r"}
+    }
+    expect eof
+EOF
+done
