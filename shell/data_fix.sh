@@ -12,37 +12,44 @@ colorEcho(){
     echo -e "\033[${COLOR}${@:2}\033[0m"
 }
 
-[ $# -ne 1 ] && echo "请加上namespace";exit
-
-
+host_ip_last=`ifconfig ens160 | awk -F '[ .]*' '/inet/{print $6}'`
+if [ $host_ip_last -eq 229 ];then ns=uatstable;elif [ $host_ip_last -eq 186 ];then ns=uat;fi
 IFS=";"
-while read line;do
-    num_column=`echo $line | awk '{print NF}'`
-    app=`echo $line | awk '{print $1}'`
-    chk_cmd=`echo $line |  awk '{$1=""; print $0}'`
-    pod_name=`kubectl get pods -n $1 | grep $app | awk '{print $1}'`
-    status=`kubectl get pods -n $1 | grep $app | awk '{print $3}'`
 
-    kubectl get pods -n $1 | grep $app &>/dev/null
-    if [[ $? -eq 0 ]]; then
-        # pods正常running
-        if [[ $status == Running ]];then
-            echo "$app => ${status}, 名称 ${pod_name}"
-            if [ $num_column -eq 1 ];then
-                echo '    echo "没有注释"'
+apply_pod(){
+    app=`echo $yaml | awk '{print $1}'`
+    cd /data/script/k8s-$ns/yaml
+    while read yaml;do
+        kubecl apply -f ${app}.yaml
+        sleep 3
+    done<1.txt
+}
+
+ver_chk(){
+    
+}
+
+pod_status(){
+    while read line;do
+        pod_name=`kubectl get pods -n $ns | grep $app | awk '{print $1}'`
+        status=`kubectl get pods -n $ns | grep $app | awk '{print $3}'`
+    
+        kubectl get pods -n $ns | grep $app &>/dev/null
+        if [[ $? -eq 0 ]];then
+            if [[ $status == Running ]];then
+                echo "$app => ${status}, 名称 ${pod_name}"
             else
-                for cmd in $chk_cmd;do
-
-                done
+                colorEcho $YELLOW "$app => ${status}, 名称 ${pod_name}"
+            echo "    请查看日志: kubectl logs -n $ns --tail 500 $pod_name"
             fi
-        # pod状态为非running
         else
-            colorEcho $YELLOW "$app => ${status}, 名称 ${pod_name}"
-        echo "    请查看日志: kubectl logs -n $1 --tail 500 $pod_name"
+            colorEcho $RED "$app is not running!"
         fi
-    else
-        # pod没起来
-        colorEcho $RED "$app 没有运行"
-    fi
-done<1.txt
+    done</tmp/1.txt
+}
 
+
+
+
+# file format:
+# app_name;image_version;source;health_check_site
