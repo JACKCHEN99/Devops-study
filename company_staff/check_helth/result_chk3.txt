@@ -1,0 +1,68 @@
+root@jason:check_helth# i=1;while read line;do cmd=`echo $line|awk -F '|' '{print $2}'`; echo $i $line;curl $cmd;echo -e "\n";sleep 1;let i++;done<check_list2.txt 
+
+1 ihr360-authority-aggregate-provider|http://192.168.1.60:42102/actuator/health
+{"code":0,"message":null,"url":null,"data":{"status":"UP","details":{"diskSpace":{"status":"UP","details":{"total":3935025946624,"free":2101256638464,"threshold":10485760}},"refreshScope":{"status":"UP"}}},"showType":0,"errorResult":false}
+
+8 ihr360-i18n-executor|http://192.168.1.60:40517/actuator/health
+{"status":"UP","details":{"diskSpace":{"status":"UP","details":{"total":3935025946624,"free":2463480946688,"threshold":10485760}},"db":{"status":"UP","details":{"database":"MySQL","hello":1}},"refreshScope":{"status":"UP"}}}
+
+15 ihr360-one-click-provider|http://192.168.1.60:40501/health
+curl: (7) Failed to connect to 192.168.1.60 port 40501: 拒绝连接
+
+
+83 ihr360-data-sync|http://192.168.1.60:40511/actuator/health
+Warning: Binary output can mess up your terminal. Use "--output -" to tell 
+Warning: curl to output it to your terminal anyway, or consider "--output 
+Warning: <FILE>" to save to a file.
+
+
+84 ihr360-2ndparty-api-provider|http://192.168.1.60:40534/actuator/health
+
+
+110 ihr360-h5-static|http://192.168.1.60:18085/ihr-h5/zh_CN/version.json
+{"environment":"branch","application":"reactapp","version":"0.1.0","gitInfo":["describe-short:89cf59c045","Commit Time: null","Build Time:2020-12-17 16:23","Message Full : null","Commit Username: null","Build Username:"],"abbrevId":"89cf59c045","commitTime":null}
+
+
+121 ihr360-payroll-web-static|http://192.168.1.60:18102/web/assets/version.json
+{
+    "environment": "branch",
+    "application": "irenshi-web-static",
+    "version": "1.2.1",
+    "gitInfo": [
+        "describe-short: 182e498",
+        "Commit Time: 2020-12-22 11:14:10 +0800",
+        "Build Time: 2020-12-22-14-12-32",
+        "Message Full: Merge branch 'task-7703-release' into 'release'task 7703 -faq、操作指南配置修改- releaseSee merge request ihr360/ihr360-payroll-web-static!1044",
+        "Commit Username: Lemon Lai",
+        "Build Username: "
+    ],
+    "abbrevId": "182e498",
+    "commitTime": "2020-12-22 11:14:10 +0800"
+}
+
+
+134 ihr360-login-static|http://192.168.1.60:18096/login/zh_CN/index.html
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,shrink-to-fit=no"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="renderer" content="webkit"><meta name="theme-color" content="#000000"><link rel="manifest" href="./manifest.json"><link rel="shortcut icon" href="./favicon.ico"><title></title><link href="static/css/index.e00f82fe.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div><script type="text/javascript" src="static/js/vendor.a789ae1e.js"></script><script type="text/javascript" src="static/js/antd.6d44e8b8.js"></script><script type="text/javascript" src="static/js/ihrui.aa50f368.js"></script><script type="text/javascript" src="static/js/index.bafeede4.js"></script></body><script>function IEVersion(){var e=navigator.userAgent,r=-1<e.indexOf("compatible")&&-1<e.indexOf("MSIE"),t=-1<e.indexOf("Edge")&&!r,i=-1<e.indexOf("Trident")&&-1<e.indexOf("rv:11.0");if(r){new RegExp("MSIE (\\d+\\.\\d+);").test(e);var o=parseFloat(RegExp.$1);return 7==o?7:8==o?8:9==o?9:10==o?10:6}if(t)return 12;if(i)return 11;var n,a,s,f,c={},d=e.toLowerCase();return(n=d.match(/firefox\/([\d.]+)/))?c.firefox=n[1]:(n=d.match(/chrome\/([\d.]+)/))?c.chrome=n[1]:(n=d.match(/opera.([\d.]+)/))?c.opera=n[1]:(n=d.match(/version\/([\d.]+).*safari/))&&(c.safari=n[1]),c.firefox?c.firefox.split(".")[0]:c.chrome?c.chrome.split(".")[0]:c.safari?c.safari.split(".")[0]:a<61||s<55||f<10?-2:-1}!function(e,r,t,i,o){e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},t=r.createElement("script");var n=r.getElementsByTagName("script")[0];t.async=1,t.src=("https:"==document.location.protocol?"https://":"http://")+"assets.growingio.com/2.1/gio.js",n.parentNode.insertBefore(t,n)}(window,document,"script",0,"gio"),gio("init","ae8197bb4474d747",{hashtag:!0}),gio("send"),function(){var e=IEVersion();if(null==typeof Worker||-1!=e&&e<11||-2==e)alert("您的浏览器版本过低，为了获得更好的用户体验，强烈推荐使用最新版的Chrome(谷歌)、360、搜狗、QQ、遨游、Opera等浏览器。强烈不推荐使用IE，并且不支持IE11以下浏览器！"),window.location.href="https://www.ihr360.com/web/index/view/browser-download.jsp"}()</script></html>
+
+135 irenshi-web-staff-static|http://192.168.1.60:18087/staff/assets/view/workbench/index.html
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="renderer" content="webkit"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><link rel="shortcut icon" href="../../img/favicon.ico" mce_href="../../img/favicon.ico" type="image/x-icon"><title>个人主页</title><link rel="stylesheet" href="../../css/workbench.min.34d98ab2.css"></head><body ng-controller="IndexMain" class="ng-cloak"><div id="staff-loading-Box" ng-show="loadingShow" class="staff-loading-Box"><div class="loading"></div></div><div class="index-body1" ng-class="{'index-body1-bottom-box':needBottomBox,'index-body1-full':indexBody1Full && indexBody1FullClick,'index-body1-part':!indexBody1Full && indexBody1FullClick}"><div class="index-body2"><div class="index-body3"><ng-view></ng-view></div></div><div class="index-body-bottom-box" ng-class="{'hide':!needBottomBox}"></div></div><script src="../../js/core/main-init.js"></script><script src="../../js/workbench.min.41574363.js"></script></body></html>
+
+137 irenshi-weixin|http://192.168.1.60:8093/weixin/index.html
+<html>
+<head>
+    <meta http-equiv="refresh" content="0;url=/">
+    <script type="text/javascript">
+        window.location.href = "/"
+    </script>
+</head>
+<body>
+<!-- ！！此文件用于负载均衡的心跳响应，切勿删除！！ -->
+<p>If you are not redirected automatically, follow the <a href="/">link</a>.</p>
+</body>
+</html>
+
+141 ihr360-iclock-api-provider|http://192.168.1.60:8100/heartbeat
+1609231680837
+
+143 irenshi-app-api|http://192.168.1.60:8082/api/heartbeat/alive
+{"currentTime":1609231683975,"response":"OK","responseCode":0}
