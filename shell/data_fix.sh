@@ -26,7 +26,10 @@ apply_pod(){
 }
 
 ver_chk(){
-    
+    while read line;do
+        pod_name=`kubectl get pods -n $ns | grep $app | awk '{print $1}'`
+        status=`kubectl get pods -n $ns | grep $app | awk '{print $3}'`
+    done</tmp/1.txt
 }
 
 pod_status(){
@@ -50,6 +53,27 @@ pod_status(){
 
 
 
-
 # file format:
 # app_name;image_version;source;health_check_site
+-------------------------------------------------------
+菜单栏(函数)
+1.apply_pod  更新应用(包含ver_chk)
+    ver_chk    检查web的app_version和yaml中的image_version
+2.pod_status 检查应用(pod)的状态
+3.log_cmd    查看日志
+--------------------------------------------------------
+流程:
+更新应用, 1分钟 3分钟 5分钟,检查pod状态
+
+------------------------------------------------------
+2.检查yaml中的image版本和是否一致
+    y)
+        输出 app_name web_docker_ersion yaml_docker_version
+            input是否要按顺序apply *.yaml
+                y)
+                    kubectl apply -f ,sleep 5
+                n)
+                    exit
+    n)
+        输出 app_name web_docker_ersion yaml_docker_version
+        
