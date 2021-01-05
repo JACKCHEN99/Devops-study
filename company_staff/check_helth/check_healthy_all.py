@@ -5,6 +5,7 @@ import json
 import sys
 
 def get_url(check_url_line):
+    app_name = check_url_line[0]
     url = check_url_line[1]
     #print(url)
     try:
@@ -20,28 +21,29 @@ def get_url(check_url_line):
                 status = '1'
             else:
                 status ='0'
-            print(status)
-            # return app_name,status
+            return app_name,status
         except:
             if retcode == 200:
                 status = '1'
             else:
                 status = '0'
-            print(status)
-            # return app_name,status
+            return app_name,status
     except:
         status = '0'
-        print(status)
-        # return app_name,status
+        return app_name,status
     exit()
+
+
 if __name__=="__main__":
-    with open('/data/health.list', 'r', encoding='utf-8') as f:
-        dic = []
-        app_name=sys.argv[1]
+    with open('./check_list.txt', 'r', encoding='utf-8') as f:
+        #dic = []
+        result_all=""
         for line in f.readlines():
-            if app_name in line:
-                line = line.strip('\n')
-                b = line.split('|')
-                #print(b)
-                #dic.append(b)
-                get_url(b)
+            line = line.strip('\n')
+            b = line.split('|')
+            #print(b)
+            #dic.append(b)
+            app_name,status = get_url(b)
+            result = "{} {}\n".format(app_name,status)
+            result_all += result
+        print(result_all)
