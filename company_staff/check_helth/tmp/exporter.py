@@ -1,10 +1,11 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+from flask import Flask, Response
+from prometheus_client import Counter, generate_latest
 import requests
 import json
 import sys
-from flask import Flask, Response
-from prometheus_client import Gauge, generate_latest, CollectorRegistry
+app = Flask(__name__)
 
 def get_url(check_url_line):
     app_name = check_url_line[0]
@@ -36,10 +37,12 @@ def get_url(check_url_line):
     exit()
 
 
-if __name__=="__main__":
+@app.route('/metrics')
+def hello():
+    result_all=""
+
     with open('./check_list.txt', 'r', encoding='utf-8') as f:
         #dic = []
-        result_all=""
         for line in f.readlines():
             line = line.strip('\n')
             b = line.split('|')
@@ -48,4 +51,10 @@ if __name__=="__main__":
             app_name,status = get_url(b)
             result = "{} {}\n".format(app_name,status)
             result_all += result
-        print(result_all)
+        # print(result_all)
+
+
+ 	return Response(result_all, mimetype='text/plain')
+
+if __name__ == '__main__':
+ app.run(host='0.0.0.0', port=5000)
